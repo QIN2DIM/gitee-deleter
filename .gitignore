@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+.idea
+tests/
+delete_gitee_repos/database
+ctx_cookies.yaml

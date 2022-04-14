@@ -1,0 +1,6 @@
+loguru~=0.6.0
+selenium~=4.1.0
+pyyaml~=6.0
+cloudscraper~=1.2.58
+lxml~=4.7.1
+webdriver_manager>=3.5.2
