@@ -1,6 +1,5 @@
 ## Introduction
-
-`Gitee`账号注销[砖]家，一键删光「我的仓库」。
+[Gitee](https://gitee.com/) 销号[砖]家，一键删光「我的仓库」。
 
 ## Requirements
 
@@ -9,7 +8,7 @@
 
 ## Usage
 
-> 项目依赖 google-chrome 运行，请确保你的计算机已装有谷歌浏览器。
+> 项目依赖 [google-chrome](https://www.google.com/intl/zh-CN/chrome/) 运行，请确保你的计算机已装有谷歌浏览器。
 
 1. 下载依赖
 
