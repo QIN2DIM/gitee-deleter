@@ -11,9 +11,10 @@ from hashlib import sha256
 from typing import Optional, List, Union
 from urllib.parse import urlparse
 
+import requests
 import yaml
-from cloudscraper import create_scraper
 from lxml import etree
+from requests.exceptions import SSLError, ProxyError
 from selenium.common.exceptions import (
     InvalidCookieDomainException,
     WebDriverException,
@@ -45,7 +46,7 @@ for _trace in [PROJECT_DATABASE, DIR_COOKIES]:
 class _CookieManager:
     """管理上下文身份令牌"""
 
-    URL_ACCOUNT_PERSONAL = "https://gitee.com/profile/account_information"
+    URL_ACCOUNT_PERSONAL = "https://gitee.com/profile/emails"
 
     def __init__(self, username: str, path_ctx_cookies: Optional[str] = None):
         self.username = username
@@ -106,11 +107,10 @@ class _CookieManager:
             if isinstance(ctx_cookies, list)
             else ctx_cookies
         }
-        scraper = create_scraper()
-        response = scraper.get(
+        response = requests.get(
             self.URL_ACCOUNT_PERSONAL, headers=headers, allow_redirects=False
         )
-        return bool("第三方帐号绑定" in response.text)
+        return bool(self.username in response.text)
 
     def reset_ctx_cookie(
         self, ctx_cookies: Optional[List[dict]] = None
@@ -119,7 +119,9 @@ class _CookieManager:
         if not self.is_available_cookie(ctx_cookies):
             logger.error(
                 ToolBox.runtime_report(
-                    action_name=self.action_name, motive="QUIT", message="Cookie 无效或已过期"
+                    action_name=self.action_name,
+                    motive="QUIT",
+                    message="Cookie 无效或与用户名不匹配",
                 )
             )
             return
@@ -253,8 +255,7 @@ class _AwesomeGitee:
             "Chrome/100.0.4896.75 Safari/537.36 Edg/100.0.1185.39",
             "cookie": self.cookie,
         }
-        scraper = create_scraper()
-        response = scraper.get(self.url_profile, headers=headers)
+        response = requests.get(self.url_profile, headers=headers)
         tree = etree.HTML(response.content)
         hrefs = tree.xpath(
             "//ul[@id='search-projects-ulist']//a[@class='repository']/@href"
@@ -311,8 +312,13 @@ class _AwesomeGitee:
 def _reset_cookie(
     username: str, ctx_cookies: Optional[List[dict]] = None
 ) -> Optional[List[dict]]:
-    manager = _CookieManager(username, path_ctx_cookies=PATH_CTX_COOKIES)
-    return manager.reset_ctx_cookie(ctx_cookies)
+    try:
+        manager = _CookieManager(username, path_ctx_cookies=PATH_CTX_COOKIES)
+        return manager.reset_ctx_cookie(ctx_cookies)
+    except (ProxyError, SSLError) as err:
+        logger.warning(err)
+        logger.debug("请执行 `pip install urllib3==1.25.11` 跳过 tls-in-tls 认证")
+        raise KeyboardInterrupt
 
 
 def _launcher(username: str, password: str, cookie: str):

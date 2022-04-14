@@ -7,4 +7,4 @@ from .remove_all import remove_all
 
 __all__ = ["remove_all"]
 
-__version__ = "0.0.1"
+__version__ = "0.0.2"
