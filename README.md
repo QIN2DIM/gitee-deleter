@@ -1,3 +1,6 @@
+<p  align="center"><img width="80%" src="https://user-images.githubusercontent.com/62018067/169050956-8fb236bd-0874-4a17-ab9c-ace839b490b4.png"></p>
+
+
 ## Introduction
 [Gitee](https://gitee.com/) 销号[砖]家，一键删光「我的仓库」。
 
@@ -32,4 +35,3 @@
        remove_all(username=GITEE_USERNAME, password=GITEE_PASSWORD)
    
    ```
-
